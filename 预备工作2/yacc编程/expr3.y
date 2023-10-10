@@ -43,7 +43,7 @@ int count=0;
 
 %right EQUAL
 %left ADD MINUS
-%left MULT DIV
+%left MUL DIV
 %right UMINUS         
 
 %type <dval> expr
