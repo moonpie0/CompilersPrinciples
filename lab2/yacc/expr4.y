@@ -9,6 +9,7 @@ YACC file
 #include<stdlib.h>
 #include<ctype.h>
 #include <string.h>
+#include<math.h>
 int yylex();
 
 int lookup(char *);
@@ -62,15 +63,15 @@ lines   :       lines expr ';'// { printf("%f\n", $2); }
         |
         ;
 //TODO:完善表达式的规则
-expr    :       expr ADD expr   { $$=($1->value)+($3->value); $$->regno=regcount++; printf("add $%d, $%d,$%d ",$$->regno; $1->regno;$3->regno);}
-        |       expr MINUS expr   { $$=$1->value-$3->value; $$->regno=regcount++; printf("sub $%d, $%d,$%d ",$$->regno; $1->regno;$3->regno);}
-        |       expr MUL expr   { $$=$1->value*$3->value; $$->regno=regcount++; printf("mul $%d, $%d,$%d ",$$->regno; $1->regno;$3->regno);}
-        |       expr DIV expr   { $$=$1->value/$3->value; $$->regno=regcount++; printf("div $%d, $%d,$%d ",$$->regno; $1->regno;$3->regno);}
-        |       LPAREN expr RPAREN    { $$=$2->value; $$->regno=$2->regno;}
-        |       MINUS expr %prec UMINUS   {$$=-$2->value;$$->regno=$2->regno;}
-        |       NUMBER  {$$=$1->value; printf("#%f",$1->value);$$->regno=$1->regno;}
-        |       IDENT EQUAL expr  {$1->value=$3->value;$$=$3->value; printf("mov $%d, $%d ",$1->regno; $3->regno);}
-        |       IDENT {$$=$1->value; $$->regno=$1->regno;}
+expr    :       expr ADD expr   { $$->value=($1->value)+($3->value); $$->regno=regcount++; printf("add r%d, r%d,r%d\n",$$->regno, $1->regno,$3->regno);}
+        |       expr MINUS expr   { $$->value=$1->value-$3->value; $$->regno=regcount++; printf("sub r%d, r%d,r%d\n ",$$->regno,$1->regno,$3->regno);}
+        |       expr MUL expr   { $$->value=$1->value*$3->value; $$->regno=regcount++; printf("mul r%d, r%d,r%d\n ",$$->regno, $1->regno,$3->regno);}
+        |       expr DIV expr   { $$->value=$1->value/$3->value; $$->regno=regcount++; printf("div r%d, r%d, r%d\n ",$$->regno, $1->regno,$3->regno);}
+        |       LPAREN expr RPAREN    { $$->value=$2->value; $$->regno=$2->regno;}
+        |       MINUS expr %prec UMINUS   {$$->value=-$2->value;$$->regno=$2->regno;}
+        |       NUMBER  {$$->value=$1->value; printf("mov r%d, #%d\n ",$1->regno, (int)round($1->value));}
+        |       IDENT EQUAL expr  {$1->value=$3->value;$$->value=$3->value; printf("mov r%d, r%d\n ",$1->regno, $3->regno);}
+        |       IDENT {$$->value=$1->value; $$->regno=$1->regno;}
         ;
 
 
