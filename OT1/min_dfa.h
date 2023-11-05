@@ -35,6 +35,17 @@ void printSet(set<int> s)
     printf("\n");
 }
 
+void printNextList(vector<std::map<char,int>> NextList, DFA*dfa)
+{
+    for(auto i:NextList)
+    {
+        for(auto c:dfa->charList)
+        {
+            printf("%c: %d ",c,i[c]);
+        }
+        printf("\n");
+    }
+}
 
 
 MinDFA* minDFA(DFA*dfa)
@@ -70,10 +81,15 @@ MinDFA* minDFA(DFA*dfa)
     minNode.push_back(e);
 
     count=2;
+
+    //printNextList(NextList,dfa);
+
+
+
     
     int num=0;
     bool modified=false;
-    for(int i=0;i<minNode.size() && num<3 ;i++) //遍历每个集合，三次未改变分组则停止
+    for(int i=0;i<minNode.size() && num<minNode.size() ;i++) //遍历每个集合，三次未改变分组则停止
     {
         
         if(minNode[i].size()==1)
@@ -97,28 +113,41 @@ MinDFA* minDFA(DFA*dfa)
                         diff.insert(node);
                         diff_label=label[NextList[node][c]];
                 }
-            }
 
+            }
+           /*printf("不一样的点是：");
+            printSet(diff);
+            printf("\n");*/
+            
         }
         if(isdifferent)
         {
+            //printf("当前长度：%d\n",minNode.size());
             for(auto k: diff)
                 label[k]=count;
             count++;
             set<int> s1,s2;
-            s1.insert(diff.begin(),diff.end());
+            //s1.insert(diff.begin(),diff.end());
+            s1=diff;
             minNode.push_back(s1);
-            s2.insert(minNode[i].begin(),minNode[i].end());
+            //s2.insert(minNode[i].begin(),minNode[i].end());
+            s2=minNode[i];
             for(auto j:s2)
             {
+                if(j>dfa->NodeList.size())
+                    break;
                 if(s1.count(j))
                     s2.erase(j);
+                //printf("%d\n",j);
             }
             minNode.push_back(s2);
+            //printf("开始删除");
             std::vector<std::set<int>> ::iterator it=minNode.begin()+i;
             minNode.erase(it);
+            //printf("删除成功");
             modified=true;
             i--;
+            //printf("当前长度：%d\n",minNode.size());
         }    
         if(modified)
             num=0;
@@ -133,11 +162,6 @@ MinDFA* minDFA(DFA*dfa)
     {
         bool nsne=true;
         minDFANode * node=new minDFANode(i);
-        if(i.count(dfa->start->no))
-        {
-            mindfa->start=node;
-            nsne=false;
-        }
             
         for(auto e:dfa->end)
         {
@@ -150,7 +174,6 @@ MinDFA* minDFA(DFA*dfa)
         if(nsne)
             mindfa->NodeList.push_back(node);
     }
-    mindfa->NodeList.insert(mindfa->NodeList.begin(),mindfa->start);
     for(auto e:mindfa->end)
         mindfa->NodeList.push_back(e);
     for(int i=0;i<mindfa->NodeList.size();i++)
@@ -169,7 +192,11 @@ MinDFA* minDFA(DFA*dfa)
             for(auto j:mindfa->NodeList)
             {
                 if(j->set.count(NextList[*(i->set.begin())][c]))
+                {
                     i->Next[c]=j->no;
+                    if(NextList[*(i->set.begin())][c]==0)
+                        i->Next[c]=-1;
+                } 
                 else if(NextList[*(i->set.begin())][c]==0)
                     i->Next[c]=-1;
             }           

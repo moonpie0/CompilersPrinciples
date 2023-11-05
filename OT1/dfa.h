@@ -48,18 +48,14 @@ DFA * NFA2DFA(NFA * nfa)
     DFA * dfa=new DFA(s);
     if(s->set.count(nfa->end)) //如果该DFA节点包含NFA的终态，则加入到end集合中
         dfa->end.insert(s);
-    std::vector<DFANode*>::iterator it=dfa->NodeList.begin();
-    int count=0;
 
     for(int i=0;;i++)
     {
         for(auto c: nfa->charList)
         {
             std::set<Node*> tmp_closure;
-            for(auto node: dfa->NodeList[i]->set)
-            
+            for(auto node: dfa->NodeList[i]->set)       
             {
-                //printf("因为没有next对吧");
                 for(auto m:node->Next)
                 {
                     

@@ -1,7 +1,7 @@
 all: test
 
 test : 
-	yacc ot1.y
+	yacc ot1.y 
 	g++ y.tab.c -o cfg
 	./cfg
 

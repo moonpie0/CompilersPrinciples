@@ -3,6 +3,8 @@
 #include<stdlib.h>
 #include<ctype.h>
 #include<string.h>
+#include"nfa.h"
+#include"dfa.h"
 #include"min_dfa.h"
 int yylex();
 #ifndef YYSTYPE
@@ -18,7 +20,6 @@ void yyerror(const char* s);
 
 //TODO:给每个符号定义一个单词类别
 %token ALPHA BLANK
-
 %left '|'  
 
 
@@ -38,7 +39,6 @@ lines   :   lines cfg '\n' {
         |   lines '\n'
         |
         ;
-//TODO:完善表达式的规则
 
 cfg     :   and '|' cfg { $$=orNFA($1,$3); }
         |   and     {$$=$1;}
@@ -69,20 +69,17 @@ int yylex()
             //do noting 
         }else if(t=='\\'){ //空串
             t=getchar();
-            if(t=='0')
-            {
+            if(t=='0'){
                 yylval=createNFA('0');
                 return BLANK;
             }
-            else
-            {
+            else{
                 ungetc(t,stdin);
                 ungetc(t,stdin);
                 return t;
-            }
+            } 
         }else if(isalpha(t)){     //字母      
             yylval=createNFA(t);
-            //printf("%c",t);
             return ALPHA;
         }else{
             return t;

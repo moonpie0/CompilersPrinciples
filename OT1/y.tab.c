@@ -73,6 +73,8 @@
 #include<stdlib.h>
 #include<ctype.h>
 #include<string.h>
+#include"nfa.h"
+#include"dfa.h"
 #include"min_dfa.h"
 int yylex();
 #ifndef YYSTYPE
@@ -85,7 +87,7 @@ FILE* yyin;
 void yyerror(const char* s);
 
 
-#line 89 "y.tab.c"
+#line 91 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -558,7 +560,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    28,    28,    38,    39,    43,    44,    47,    48,    51,
+       0,    29,    29,    39,    40,    43,    44,    47,    48,    51,
       52,    53,    54
 };
 #endif
@@ -1126,7 +1128,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* lines: lines cfg '\n'  */
-#line 28 "ot1.y"
+#line 29 "ot1.y"
                            { 
                                 NFA* nfa= yyvsp[-1]; 
                                 printNFA(nfa); 
@@ -1137,59 +1139,59 @@ yyreduce:
                                 MinDFA * mindfa=minDFA(dfa);
                                 printminDFA(mindfa);
                             }
-#line 1141 "y.tab.c"
+#line 1143 "y.tab.c"
     break;
 
   case 5: /* cfg: and '|' cfg  */
 #line 43 "ot1.y"
                         { yyval=orNFA(yyvsp[-2],yyvsp[0]); }
-#line 1147 "y.tab.c"
+#line 1149 "y.tab.c"
     break;
 
   case 6: /* cfg: and  */
 #line 44 "ot1.y"
                     {yyval=yyvsp[0];}
-#line 1153 "y.tab.c"
+#line 1155 "y.tab.c"
     break;
 
   case 7: /* and: expr and  */
 #line 47 "ot1.y"
                      { yyval=andNFA(yyvsp[-1],yyvsp[0]);}
-#line 1159 "y.tab.c"
+#line 1161 "y.tab.c"
     break;
 
   case 8: /* and: expr  */
 #line 48 "ot1.y"
                     { yyval=yyvsp[0];}
-#line 1165 "y.tab.c"
+#line 1167 "y.tab.c"
     break;
 
   case 9: /* expr: expr '*'  */
 #line 51 "ot1.y"
                                 { yyval=repeatNFA(yyvsp[-1]);}
-#line 1171 "y.tab.c"
+#line 1173 "y.tab.c"
     break;
 
   case 10: /* expr: '(' cfg ')'  */
 #line 52 "ot1.y"
                                 {yyval=yyvsp[-1];}
-#line 1177 "y.tab.c"
+#line 1179 "y.tab.c"
     break;
 
   case 11: /* expr: ALPHA  */
 #line 53 "ot1.y"
                                 {yyval=yyvsp[0]; }
-#line 1183 "y.tab.c"
+#line 1185 "y.tab.c"
     break;
 
   case 12: /* expr: BLANK  */
 #line 54 "ot1.y"
                                 {yyval=yyvsp[0];}
-#line 1189 "y.tab.c"
+#line 1191 "y.tab.c"
     break;
 
 
-#line 1193 "y.tab.c"
+#line 1195 "y.tab.c"
 
       default: break;
     }
@@ -1397,20 +1399,17 @@ int yylex()
             //do noting 
         }else if(t=='\\'){ //空串
             t=getchar();
-            if(t=='0')
-            {
+            if(t=='0'){
                 yylval=createNFA('0');
                 return BLANK;
             }
-            else
-            {
+            else{
                 ungetc(t,stdin);
                 ungetc(t,stdin);
                 return t;
-            }
+            } 
         }else if(isalpha(t)){     //字母      
             yylval=createNFA(t);
-            //printf("%c",t);
             return ALPHA;
         }else{
             return t;
